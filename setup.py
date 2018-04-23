@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 from codecs import open
 from os import path
 
-__version__ = '0.22042018'
+__version__ = '0.23042018'
 
 here = path.abspath(path.dirname(__file__))
 
@@ -20,13 +20,13 @@ dependency_links = [x.strip().replace('git+', '') for x in all_reqs if x.startsw
 setup(
     name='rosey',
     version=__version__,
-    description='Data Science Utilities for statistics and machine learning.',
+    description='Data science utilities for statistics and machine learning.',
     long_description=long_description,
     url='https://github.com/arose13/rosey',
     download_url='https://github.com/arose13/rosey/tarball/' + __version__,
     license='BSD',
     classifiers=[
-      'Development Status :: 3 - Alpha',
+      'Development Status :: 2 - Pre-Alpha',
       'Intended Audience :: Developers',
       'Programming Language :: Python :: 3',
     ],
