@@ -21,3 +21,30 @@ def plot_roc_curve(prediction_probability, true, label='', plot_curve_only=False
         graph.show()
 
     return {'fpr': fpr, 'tpr': tpr, 'threshold': thres}
+
+
+def plot_learning_curve(means, stds, xs=None, n=None, show_graph=False):
+    """
+    Plot learning curve with confidence intervals
+
+    :param xs: What the units on the x-axis should be
+    :param n: sample size, usually the number of CV intervals
+    :param means:
+    :param stds:
+    :param show_graph:
+    :return:
+    """
+    xs = xs if xs is not None else np.arange(len(means))
+
+    # If N is given, compute the standard error
+    stds = stds / np.sqrt(n) if n is not None else stds
+    ci95 = stds * 1.96
+
+    graph.plot(xs, means)
+    graph.fill_between(
+        xs,
+        means - ci95, means + ci95,
+        alpha=0.4
+    )
+    if show_graph:
+        graph.show()
