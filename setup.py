@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 from codecs import open
 from os import path
 
-__version__ = '0.15052018'
+__version__ = '0.1.15052018'
 
 here = path.abspath(path.dirname(__file__))
 
@@ -26,7 +26,7 @@ setup(
     download_url='https://github.com/arose13/rosey/tarball/' + __version__,
     license='BSD',
     classifiers=[
-      'Development Status :: 2 - Pre-Alpha',
+      'Development Status :: 3 - Alpha',
       'Intended Audience :: Developers',
       'Programming Language :: Python :: 3',
     ],
