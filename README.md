@@ -1,7 +1,6 @@
 Rosey
 ===============================
 
-version number: 0.15052018
 author: Stephen Anthony Rose
 
 Overview

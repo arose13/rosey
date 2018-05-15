@@ -2,7 +2,8 @@ from setuptools import setup, find_packages
 from codecs import open
 from os import path
 
-__version__ = '0.3.15052018'
+# noinspection SpellCheckingInspection
+__version__ = '1.20180515'  # YYYYMMDD
 
 here = path.abspath(path.dirname(__file__))
 
