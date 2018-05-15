@@ -1,0 +1,5 @@
+# These are optional dependencies
+tensorflow>=1.6.0
+keras>=2.0.4
+scikit-learn>=0.19.1
+glmnet>=2.0.0
