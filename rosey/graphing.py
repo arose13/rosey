@@ -48,3 +48,33 @@ def plot_learning_curve(means, stds, xs=None, n=None, show_graph=False):
     )
     if show_graph:
         graph.show()
+
+
+def plot_confusion_matrix(y_true, y_pred, labels: list = None, axis=1, show_graph=False):
+    """
+    Normalised Confusion Matrix
+
+    :param y_true:
+    :param y_pred:
+    :param labels:
+    :param axis: 0 if you want to know the probabilities given a predication. 1 if you want to know class confusion.
+    :param show_graph:
+    :return:
+    """
+    import seaborn as sns
+    from sklearn.metrics import confusion_matrix
+    labels = True if labels is None else labels
+
+    cm = confusion_matrix(y_true, y_pred)
+    cm = cm.astype('float') / cm.sum(axis=axis, keepdims=True)
+
+    sns.heatmap(
+        cm,
+        annot=True, square=True, cmap='Blues',
+        xticklabels=labels, yticklabels=labels
+    )
+    graph.xlabel('Predicted')
+    graph.ylabel('True')
+
+    if show_graph:
+        graph.show()
