@@ -1,7 +1,7 @@
 Rosey
 ===============================
 
-version number: 0.21042018
+version number: 0.15052018
 author: Stephen Anthony Rose
 
 Overview
@@ -25,7 +25,7 @@ Or clone the repo:
 Contributing
 ------------
 
-TBD
+Me (Stephen Anthony Rose)
 
 Example
 -------
