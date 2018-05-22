@@ -1,5 +1,11 @@
 # These are optional dependencies
+
+# Modelling Libraries
 tensorflow>=1.6.0
 keras>=2.0.4
 scikit-learn>=0.19.1
 glmnet>=2.0.0
+xgboost>=0.71
+
+# Visualisations
+missingno>=0.4.0
