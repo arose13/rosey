@@ -6,4 +6,4 @@ from . import helpers
 from . import stats
 
 __author__ = 'Stephen Anthony Rose'
-__all__ = ('graphing', 'models', 'transform', 'keras', 'helpers', 'stats')
+__all__ = ('graphing', 'models', 'metrics', 'transform', 'keras', 'helpers', 'stats')
