@@ -17,8 +17,8 @@ from sklearn.preprocessing import KernelCenterer, scale
 from sklearn.metrics.pairwise import pairwise_kernels
 from sklearn.externals.joblib import Parallel, delayed
 from sklearn.base import BaseEstimator, TransformerMixin
-from .models import L1Regressor, L1Classifier
-from .helpers import vec_to_array
+from rosey.models import L1Regressor, L1Classifier
+from rosey.helpers import vec_to_array
 
 
 def lambda_test(p_values, df=1):
@@ -359,6 +359,35 @@ def rotate_feature(feature: np.ndarray, k_matrix: np.ndarray = None, eigen_vecto
     return eigen_vectors.T @ feature
 
 
+def repeated_rbf(x, center, period, std=1):
+    """
+    Repeated Radial Basis Function
+
+    Great for seasonal, weekly, etc prediction using linear models.
+
+    >>> import numpy as np
+    >>> data = np.array([0, 365, 2*365])
+    >>> repeated_rbf(data, 0, 365, std=15)
+    array([1., 1., 1.])
+
+    :param x: time
+    :param center: center in the period the peak occurs at
+    :param period: how often the cycle repeats
+    :param std: standard deviation (width of the RBF)
+    :return:
+    """
+    n_repeats = int(x.max() // period) + 1
+    cycles = np.ones(n_repeats) * np.arange(0, n_repeats) * period
+
+    # Repeating peaks
+    centers = cycles - (-center)
+    centers = np.tile(centers, (len(x), 1))
+
+    # RBF function. Get the .max() RBF across columns to get the closest peak
+    delta = (x - centers.T).T
+    return np.exp((-(delta ** 2)) / (2 * std ** 2)).max(axis=1)
+
+
 def get_q_feature(target_name: str, random_effect: str, data: pd.DataFrame) -> pd.Series:
     """
     Performs the a transformation meant to approximate that done by the get_precise_q_feature(). There are situations
@@ -552,7 +581,7 @@ def bootstrapped_ci(base_estimator, x, y, n_resamples=100, is_regression=True, n
     :return:
     """
     import scipy.stats as stats
-    from .helpers import np_min
+    from rosey.helpers import np_min
     from sklearn.ensemble import BaggingRegressor, BaggingClassifier
     print('These are not p-values!')
     if is_regression:

@@ -12,7 +12,7 @@ from sklearn.neighbors import KernelDensity
 from sklearn.utils import resample
 from sklearn.exceptions import NotFittedError
 from glmnet import ElasticNet, LogitNet
-from .keras import sklearn_mse, keras_r2
+from .keras_utils import sklearn_mse, keras_r2
 
 
 def _np_dropna(a):
