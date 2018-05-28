@@ -3,9 +3,16 @@
 # Modelling Libraries
 tensorflow>=1.6.0
 keras>=2.0.4
+glmnet>=2.0.0  # Penalised Generalised Linear Models
+
+xgboost>=0.71  # Fast and very easy to use GBM
+catboost>=0.8.1.1  # Faster than XGBoost and natively handles categorical features
+lightgbm>=2.1.1  # Fast (Microsoft's version of gradient boosting)
+
 scikit-learn>=0.19.1
-glmnet>=2.0.0
-xgboost>=0.71
+
+# Optimisation Library
+scikit-optimize>=0.5.1
 
 # Visualisations
 missingno>=0.4.0
