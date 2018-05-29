@@ -376,7 +376,8 @@ def repeated_rbf(x, center, period, std=1):
     :param std: standard deviation (width of the RBF)
     :return:
     """
-    n_repeats = int(x.max() // period) + 1
+    span = x.max() - x.min()
+    n_repeats = int(span // period) + 1
     cycles = np.ones(n_repeats) * np.arange(0, n_repeats) * period
 
     # Repeating peaks
