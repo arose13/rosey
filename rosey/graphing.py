@@ -78,3 +78,25 @@ def plot_confusion_matrix(y_true, y_pred, labels: list = None, axis=1, show_grap
 
     if show_graph:
         graph.show()
+
+
+def plot_2d_histogram(x, y, bins=100, transform=lambda z: z, show_graph=False):
+    """
+    Creates a 2D histogram AND allows you to transform the colors of the histogram with the transform function
+
+    Datashader like functionality without all the hassle
+    :param x:
+    :param y:
+    :param bins:
+    :param transform: function that takes 1 argument used to transform the histogram
+    :param show_graph:
+    :return:
+    """
+    import numpy as np
+
+    h, *_ = np.histogram2d(x, y, bins=bins)
+    h = np.rot90(h)
+
+    graph.imshow(transform(h), aspect='auto')
+    if show_graph:
+        graph.show()
