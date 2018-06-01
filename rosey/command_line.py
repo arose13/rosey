@@ -203,6 +203,53 @@ def validate_running_credentials(user_name='beesy'):
     assert_valid_python_version()
 
 
+def split_csv(filename, n_splits=-1, verbose=False):
+    """
+    Splits a file with a header to N files and returns the list of split file names
+
+    Uses bash commands for speed
+
+    :param filename:
+    :param n_splits:
+    :param verbose: Print progress through the process
+    :return:
+    """
+    import math
+    from multiprocessing import cpu_count
+    assert_is_linux()
+
+    if n_splits == -1:
+        n_splits = cpu_count()
+
+    # Split PVCF into even parts
+    if verbose:
+        print(f'Solving split sizes...')
+    n_lines = count_lines_in_file(filename)
+    lines_per_part = math.ceil(n_lines / n_splits)
+
+    if verbose:
+        print(f'Splitting {filename}')
+    split_cmd = f'split --lines {lines_per_part} {filename} {filename + ".temp."}'
+    run_as_shell_script(split_cmd, f'split-{filename}.sh', is_sudo=False)
+    subfile_list = directory_files([filename, '.temp.'])
+    subfile_list.sort()
+
+    # Add headers to sub files
+    add_headers_cmd = f'head -n 1 {filename} > header_file\n'
+    for part in subfile_list[1:]:
+        temp_part = part + '.ephemeral'
+
+        add_headers_cmd += f'cat header_file {part} > {temp_part}\n'
+        add_headers_cmd += f'mv {temp_part} {part}\n'
+    add_headers_cmd += 'rm header_file'
+    run_as_shell_script(add_headers_cmd, f'add-headers-{filename}.sh', is_sudo=False)
+
+    if len(subfile_list) != n_splits:
+        raise AssertionError(f'{filename} did not split correctly')
+
+    return subfile_list
+
+
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
