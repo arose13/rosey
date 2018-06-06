@@ -7,6 +7,11 @@ from functools import partial
 fprint = partial(print, flush=True)
 
 
+def suppress_warnings():
+    import warnings
+    warnings.simplefilter('ignore')
+
+
 def coerce_string_to_float(x):
     try:
         return float(x)
