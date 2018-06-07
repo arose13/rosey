@@ -34,6 +34,7 @@ def plot_learning_curve(means, stds, xs=None, n=None, show_graph=False):
     :param show_graph:
     :return:
     """
+    import numpy as np
     xs = xs if xs is not None else np.arange(len(means))
 
     # If N is given, compute the standard error
