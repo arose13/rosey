@@ -73,6 +73,12 @@ np_min = np.vectorize(_np_min, otypes=[float])
 
 
 def time_func(f):
+    """
+    Prints the execution time of the function it decorates
+
+    :param f:
+    :return:
+    """
     import time
 
     def wrap(*args):
