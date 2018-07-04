@@ -51,7 +51,7 @@ def plot_learning_curve(means, stds, xs=None, n=None, show_graph=False):
         graph.show()
 
 
-def plot_confusion_matrix(y_true, y_pred, labels: list = None, axis=1, show_graph=False):
+def plot_confusion_matrix(y_true, y_pred, labels: list=None, axis=1, show_graph=False):
     """
     Normalised Confusion Matrix
 
@@ -81,6 +81,63 @@ def plot_confusion_matrix(y_true, y_pred, labels: list = None, axis=1, show_grap
         graph.show()
 
 
+def plot_confusion_probability_matrix(
+        y_true, y_pred, y_pred_proba,
+        labels: list=None, rug_height=0.05, show_graph=False
+):
+    """
+    Confusion matrix where you can see the histogram of the
+
+    >>> from sklearn.datasets import load_breast_cancer
+    >>> from sklearn.linear_model import LogisticRegression
+    >>> import matplotlib.pyplot as graph
+    >>> x, y = load_breast_cancer(return_X_y=True)
+    >>> model = LogisticRegression().fit(x, y)
+    >>> ypp = model.predict_proba(x)[:, 1]
+    >>> plot_confusion_probability_matrix(y, model.predict(x), model.predict_proba(x))
+    >>> graph.show()
+    >>> plot_confusion_probability_matrix(y, model.predict(x), model.predict_proba(x), labels=['Maligant', 'Benign'])
+    >>> graph.show()
+
+    :param y_true:
+    :param y_pred:
+    :param y_pred_proba:
+    :param labels:
+    :param rug_height:
+    :param show_graph:
+    :return:
+    """
+    import numpy as np
+    from itertools import product
+    from sklearn.metrics import confusion_matrix
+
+    n_classes = y_pred_proba.shape[1]
+    labels = list(range(n_classes)) if labels is None else labels
+    cm = confusion_matrix(y_true, y_pred)
+
+    # Create subplots
+    figure, box = graph.subplots(n_classes, n_classes, sharex='all')
+
+    # Create histograms
+    for i, j in product(range(n_classes), range(n_classes)):
+        selection_mask = (y_true == i) & (y_pred == j)
+        assert selection_mask.sum() == cm[i, j]
+
+        subset_probabilities = y_pred_proba[selection_mask, i]
+        box[i, j].set_title(f'N: {cm[i, j]}')
+        box[i, j].hist(subset_probabilities, density=True, bins=solve_n_bins(subset_probabilities), alpha=0.7)
+        box[i, j].plot(subset_probabilities, np.ones(len(subset_probabilities)) * rug_height, '|', alpha=0.7)
+        box[i, j].set_yticks([])
+
+    # Axis labels
+    for k in range(n_classes):
+        box[-1, k].set_xlabel(f'Pred = {labels[k]}')
+        box[k, 0].set_ylabel(f'True = {labels[k]}')
+
+    if show_graph:
+        graph.show()
+
+
 def plot_2d_histogram(x, y, bins=100, transform=lambda z: z, show_graph=False):
     """
     Creates a 2D histogram AND allows you to transform the colors of the histogram with the transform function
@@ -101,3 +158,21 @@ def plot_2d_histogram(x, y, bins=100, transform=lambda z: z, show_graph=False):
     graph.imshow(transform(h), aspect='auto')
     if show_graph:
         graph.show()
+
+
+if __name__ == '__main__':
+    from sklearn.datasets import load_breast_cancer
+    from sklearn.linear_model import LogisticRegression
+    import matplotlib.pyplot as graph
+    from rosey.stats import solve_n_bins
+
+    x, y = load_breast_cancer(return_X_y=True)
+    model: LogisticRegression = LogisticRegression().fit(x, y)
+
+    ypp = model.predict_proba(x)[:, 1]
+
+    plot_confusion_probability_matrix(y, model.predict(x), model.predict_proba(x))
+    graph.show()
+
+    plot_confusion_probability_matrix(y, model.predict(x), model.predict_proba(x), labels=['Maligant', 'Benign'])
+    graph.show()
