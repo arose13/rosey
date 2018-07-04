@@ -3,7 +3,7 @@ from codecs import open
 from os import path
 
 # noinspection SpellCheckingInspection
-__version__ = '1.20180607'  # YYYYMMDD
+__version__ = '1.20180704'  # YYYYMMDD
 
 here = path.abspath(path.dirname(__file__))
 
