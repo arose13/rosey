@@ -110,6 +110,7 @@ def plot_confusion_probability_matrix(
     import numpy as np
     from itertools import product
     from sklearn.metrics import confusion_matrix
+    from rosey.stats import solve_n_bins
 
     n_classes = y_pred_proba.shape[1]
     labels = list(range(n_classes)) if labels is None else labels
@@ -158,21 +159,3 @@ def plot_2d_histogram(x, y, bins=100, transform=lambda z: z, show_graph=False):
     graph.imshow(transform(h), aspect='auto')
     if show_graph:
         graph.show()
-
-
-if __name__ == '__main__':
-    from sklearn.datasets import load_breast_cancer
-    from sklearn.linear_model import LogisticRegression
-    import matplotlib.pyplot as graph
-    from rosey.stats import solve_n_bins
-
-    x, y = load_breast_cancer(return_X_y=True)
-    model: LogisticRegression = LogisticRegression().fit(x, y)
-
-    ypp = model.predict_proba(x)[:, 1]
-
-    plot_confusion_probability_matrix(y, model.predict(x), model.predict_proba(x))
-    graph.show()
-
-    plot_confusion_probability_matrix(y, model.predict(x), model.predict_proba(x), labels=['Maligant', 'Benign'])
-    graph.show()
