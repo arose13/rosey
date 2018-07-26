@@ -322,8 +322,8 @@ def ecdf(data):
     Empirical CDF (x, y) generator
     """
     x = np.sort(data)
-    cumulative_prob_density = np.linspace(0, 1, len(x))
-    return cumulative_prob_density, x
+    cdf = np.linspace(0, 1, len(x))
+    return cdf, x
 
 
 def elbow_detection(data, threshold=1, tune=0.01, get_index=False):

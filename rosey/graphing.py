@@ -81,9 +81,34 @@ def plot_confusion_matrix(y_true, y_pred, labels: list=None, axis=1, show_graph=
         graph.show()
 
 
+def plot_ecdf(x, plot_kwargs=None, show_graph=False):
+    """
+    Create the plot of the empricial distribution function
+
+    >>> import numpy as np
+    >>> import matplotlib.pyplot as graph
+    >>> plot_ecdf(np.random.normal(100, 15, size=100), {'label': 'blah'})
+    >>> graph.show()
+
+    :param x:
+    :param plot_kwargs:
+    :param show_graph:
+    :return:
+    """
+    from rosey.stats import ecdf
+
+    cdf, x = ecdf(x)
+    plot_kwargs = dict() if plot_kwargs is None else plot_kwargs
+
+    graph.plot(x, cdf, **plot_kwargs)
+
+    if show_graph:
+        graph.show()
+
+
 def plot_confusion_probability_matrix(
         y_true, y_pred, y_pred_proba,
-        labels: list=None, rug_height=0.05, show_graph=False
+        labels: list=None, figsize=(8, 8), rug_height=0.05, show_graph=False
 ):
     """
     Confusion matrix where you can see the histogram of the
@@ -103,6 +128,7 @@ def plot_confusion_probability_matrix(
     :param y_pred:
     :param y_pred_proba:
     :param labels:
+    :param figsize:
     :param rug_height:
     :param show_graph:
     :return:
@@ -117,7 +143,7 @@ def plot_confusion_probability_matrix(
     cm = confusion_matrix(y_true, y_pred)
 
     # Create subplots
-    figure, box = graph.subplots(n_classes, n_classes, sharex='all')
+    figure, box = graph.subplots(n_classes, n_classes, sharex='all', figsize=figsize)
 
     # Create histograms
     for i, j in product(range(n_classes), range(n_classes)):
@@ -159,3 +185,8 @@ def plot_2d_histogram(x, y, bins=100, transform=lambda z: z, show_graph=False):
     graph.imshow(transform(h), aspect='auto')
     if show_graph:
         graph.show()
+
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
