@@ -165,6 +165,34 @@ def plot_confusion_probability_matrix(
         graph.show()
 
 
+def plot_barplot_from_dict(d: dict, orient: str='h', show_graph=False):
+    """
+    Create bar plot from a dictionary that maps a name to the size of the bar
+
+    >>> dictionary = {'dogs': 10, 'cats': 4, 'birbs': 8}
+    >>> plot_barplot_from_dict(dictionary, show_graph=True)
+
+    :param d:
+    :param orient:
+    :param show_graph:
+    :return:
+    """
+    orient = orient.lower()
+
+    if 'h' not in orient and 'v' not in orient:
+        raise ValueError('`orient` must be either `h` for horizontal and `v` for veritcal')
+
+    bar_plot = graph.barh if 'h' in orient else graph.bar
+    bar_plot(
+        range(len(d.values())),
+        list(d.values()),
+        tick_label=list(d.keys())
+    )
+
+    if show_graph:
+        graph.show()
+
+
 def plot_2d_histogram(x, y, bins=100, transform=lambda z: z, show_graph=False):
     """
     Creates a 2D histogram AND allows you to transform the colors of the histogram with the transform function
