@@ -165,12 +165,12 @@ def plot_confusion_probability_matrix(
         graph.show()
 
 
-def plot_barplot_from_dict(d: dict, orient: str='h', show_graph=False):
+def plot_barplot(d: dict, orient: str= 'h', show_graph=False):
     """
     Create bar plot from a dictionary that maps a name to the size of the bar
 
     >>> dictionary = {'dogs': 10, 'cats': 4, 'birbs': 8}
-    >>> plot_barplot_from_dict(dictionary, show_graph=True)
+    >>> plot_barplot(dictionary, show_graph=True)
 
     :param d:
     :param orient:
