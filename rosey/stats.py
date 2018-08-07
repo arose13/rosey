@@ -169,7 +169,7 @@ def compute_null_ss(y: np.ndarray):
     return ((y - y.mean()) ** 2).sum()
 
 
-def r2_pymc3(y_true, y_pred_rv):
+def pymc3_r2(y_true, y_pred_rv):
     """
     Allows you to get a trace of a model's r2
 
@@ -179,6 +179,19 @@ def r2_pymc3(y_true, y_pred_rv):
     """
     import pymc3.math as pmath
     return 1 - (pmath.sum(pmath.sqr(y_true - y_pred_rv)) / compute_null_ss(y_true))
+
+
+def pymc3_mse(y_true, y_pred_rv):
+    """
+    Allows you to get a trace of a model's mean square error
+
+    :param y_true: array like
+    :param y_pred_rv: PyMC3 Rv trace
+    :return:
+    """
+    import pymc3.math as pmath
+    n = len(y_true)
+    return pmath.sum(pmath.sqr(y_true - y_pred_rv)) / n
 
 
 def r2_from_deviance(residuals_deviance, null_deviance):
