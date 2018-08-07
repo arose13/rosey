@@ -1183,6 +1183,9 @@ class BairSPCA(BaseEstimator, TransformerMixin):
         self.cv_results, self.indices, self.best = 3 * [None]
         self.verbose = verbose
 
+        if use_pvalues:
+            warnings.warn('Using p-values could select spurious features as important!')
+
     def _check_is_fitted(self):
         if self.indices is None or self.best is None:
             raise NotFittedError
