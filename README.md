@@ -1,7 +1,7 @@
 Rosey
 ===============================
 
-author: Stephen Anthony Rose
+Author: Stephen Anthony Rose
 
 Overview
 --------
