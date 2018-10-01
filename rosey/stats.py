@@ -4,7 +4,6 @@ import pandas as pd
 import numpy.linalg as la
 from tqdm import tqdm
 from multiprocessing import cpu_count
-from glmnet import ElasticNet, LogitNet
 from scipy.sparse.linalg import eigsh
 from sklearn.utils import resample
 from sklearn.linear_model import LinearRegression, LogisticRegression
@@ -17,7 +16,6 @@ from sklearn.preprocessing import KernelCenterer, scale
 from sklearn.metrics.pairwise import pairwise_kernels
 from sklearn.externals.joblib import Parallel, delayed
 from sklearn.base import BaseEstimator, TransformerMixin
-from rosey.models import L1Regressor, L1Classifier
 from rosey.helpers import vec_to_array
 
 
@@ -597,6 +595,7 @@ def bootstrapped_ci(base_estimator, x, y, n_resamples=100, is_regression=True, n
     import scipy.stats as stats
     from rosey.helpers import np_min
     from sklearn.ensemble import BaggingRegressor, BaggingClassifier
+
     print('These are not p-values!')
     if is_regression:
         # Fit Models
@@ -718,6 +717,8 @@ def l1_permutation_test(
     :param verbose: 0 is no output but the more positive the the more output
     :return:
     """
+    from .models import L1Regressor, L1Classifier
+
     estimated_coefs = np.squeeze(estimated_coefs)
     if estimated_coefs.ndim != 1:
         raise ValueError('`estimated_coefs` could not be coerced into a vector. Check input!')
@@ -762,6 +763,7 @@ def is_positive_semi_definite(x):
 
 
 def _parallel_permute_count_nonzero_penalised_coefs(xp, yp, lam_path, penalties, norm_num, is_regression):
+    from glmnet import ElasticNet, LogitNet
     np.random.shuffle(yp)
 
     params = dict(alpha=norm_num, lambda_path=lam_path)
@@ -807,6 +809,8 @@ class PenalisedFDRControl:
             self, penalty_free_indices=list(),
             min_lambda_ratio=1e-3, n_lambdas=250, cv=10, is_regression=True, norm_num=1
     ):
+        from glmnet import ElasticNet, LogitNet
+
         if not (isinstance(penalty_free_indices, list) or isinstance(penalty_free_indices, np.ndarray)):
             raise ValueError('ols_indices must be a list or np.array')
 
@@ -923,6 +927,7 @@ class PenalisedFDRControl:
         :return:
         """
         from copy import copy
+        from .models import L1Classifier, L1Regressor
 
         model = L1Regressor(lam=penalty) if self.is_regression else L1Classifier(lam=penalty)
         penalties = self._penalty_weights()
@@ -1078,7 +1083,7 @@ class SupervisedPCA(BaseEstimator, TransformerMixin):
         """
         Returns a new X, X_trans, based on previous self.fit() estimates
         """
-        return X.dot(self.alphas_)
+        return X @ self.alphas_
 
     def fit(self, X, y):
         self._fit(X, y)

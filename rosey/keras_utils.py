@@ -1,6 +1,5 @@
 # Check out the Loss Functions Notebook if you want to so some graphs
-import keras.models
-from keras import backend as K
+import keras.backend as K
 from keras.optimizers import Optimizer
 from keras.regularizers import Regularizer
 from .Errors import IllegalArgumentsException
@@ -185,6 +184,7 @@ class SKLearnCoordinateDescent(Optimizer):
 ########################################################################################################################
 def make_keras_picklable():
     import tempfile
+    import keras.models
 
     def __getstate__(self):
         with tempfile.NamedTemporaryFile(suffix='.hdf5', delete=True) as temp:
