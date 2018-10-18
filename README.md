@@ -29,4 +29,4 @@ Me (Stephen Anthony Rose)
 Example
 -------
 
-TBD
+To be announced.
