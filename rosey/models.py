@@ -8,6 +8,7 @@ from keras.metrics import binary_crossentropy
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
 from sklearn.model_selection import KFold
+from sklearn.linear_model import LinearRegression
 from sklearn.neighbors import KernelDensity
 from sklearn.utils import resample
 from sklearn.exceptions import NotFittedError
@@ -79,6 +80,60 @@ class KerasSKWrappedBaggingClassifier(ClassifierMixin):
     def predict(self, X):
         # TODO 1/3/2018 does this work for non-binary predictions?
         return np.argmax(self.predict_proba(X), 1)
+
+
+# noinspection PyPep8Naming
+class ProbabilityLogisticRegression(LinearRegression):
+    """
+    A Logistic Regression whose target variable is the prediction probability.
+
+    >>> import numpy as np
+    >>> from sklearn.datasets import load_breast_cancer
+    >>> from sklearn.linear_model import LogisticRegression
+    >>> x, y = load_breast_cancer(return_X_y=True)
+    >>> logit = LogisticRegression().fit(x, y)
+    >>> y_prob = logit.predict_proba(x)[:, 1]
+    >>> plr = ProbabilityLogisticRegression().fit(x, y_prob)
+    """
+    @staticmethod
+    def _validate_target_variable(y: np.ndarray):
+        if np.squeeze(y).ndim != 1:
+            raise AssertionError('`y` must be 1 dimensional')
+        if 1.0 in y or 0.0 in y:
+            raise AssertionError('`y` vector cannot contain probabilities equal to either 1 or 0')
+
+    @staticmethod
+    def _inverse_logit(p):
+        return -np.log((1/p) - 1)
+
+    @staticmethod
+    def _logit(z):
+        from scipy.special import expit
+        return expit(z)
+
+    def fit(self, X, y, sample_weight=None):
+        self._validate_target_variable(y)
+        super().fit(X, self._inverse_logit(y), sample_weight)
+        return self
+
+    def predict_proba(self, X):
+        z = super().predict(X)
+        return self._logit(z)
+
+    def predict(self, X):
+        return self.predict_proba(X).round()
+
+    def score(self, X, y, sample_weight=None):
+        """
+        This returns a pseudo Rsq
+
+        :param X:
+        :param y:
+        :param sample_weight:
+        :return:
+        """
+        from sklearn.metrics import r2_score
+        return r2_score(y, self.predict_proba(X))
 
 
 # noinspection PyPep8Naming
@@ -239,29 +294,3 @@ class KerasL1OLSRegressor(KerasL1OLSBase, RegressorMixin):
             ]
         )
         return self
-
-
-if __name__ == '__main__':
-    import matplotlib.pyplot as graph
-
-    def f(x):
-        return (x[:, 0] ** 2) * (x[:, 1] ** 2)
-
-    data = np.random.uniform(-10, 10, size=(2500, 2))
-    target = f(data)
-
-    graph.scatter(data[:, 0], data[:, 1], c=target, cmap='coolwarm')
-    graph.show()
-
-    poly = PolynomialRegression(2).model
-    poly.fit(data, target)
-
-    print(poly.named_steps)
-    print(poly.named_steps['linearregression'].coef_)
-
-    graph.hist(target - poly.predict(data), bins=100)
-    graph.show()
-
-    x_new = np.random.uniform(-5, 5, size=(1000, 2))
-    graph.scatter(x_new[:, 0], x_new[:, 1], c=poly.predict(x_new), cmap='coolwarm')
-    graph.show()
