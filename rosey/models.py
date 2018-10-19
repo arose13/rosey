@@ -87,6 +87,11 @@ class ProbabilityLogisticRegression(LinearRegression):
     """
     A Logistic Regression whose target variable is the prediction probability.
 
+    That is inside of y being {0, 1} to represent the classes
+    y is (0, 1) to represent the probabilities directly and therefore to model predicts the probability directly with
+
+    -ln((1/y) - 1) = Xb
+
     >>> import numpy as np
     >>> from sklearn.datasets import load_breast_cancer
     >>> from sklearn.linear_model import LogisticRegression
