@@ -104,8 +104,7 @@ class ProbabilityLogisticRegression(LinearRegression):
     def _validate_target_variable(y: np.ndarray):
         if np.squeeze(y).ndim != 1:
             raise AssertionError('`y` must be 1 dimensional')
-        if 1.0 in y or 0.0 in y:
-            raise AssertionError('`y` vector cannot contain probabilities equal to either 1 or 0')
+        # TODO make sure y does not contain 0 or 1
 
     def fit(self, X, y, sample_weight=None):
         from scipy.special import logit
@@ -121,17 +120,18 @@ class ProbabilityLogisticRegression(LinearRegression):
     def predict(self, X):
         return self.predict_proba(X).round()
 
-    def score(self, X, y, sample_weight=None):
+    def score(self, X, y, sample_weight=None, use_accuracy=False):
         """
-        This returns a pseudo Rsq
+        This returns a pseudo Rsq and the Accuracy
 
         :param X:
         :param y:
         :param sample_weight:
+        :param use_accuracy: 
         :return:
         """
-        from sklearn.metrics import r2_score
-        return r2_score(y, self.predict_proba(X))
+        from sklearn.metrics import r2_score, accuracy_score
+        return r2_score(y, self.predict_proba(X)) if not use_accuracy else accuracy_score(y.round(), self.predict(X))
 
 
 # noinspection PyPep8Naming
