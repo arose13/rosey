@@ -107,23 +107,16 @@ class ProbabilityLogisticRegression(LinearRegression):
         if 1.0 in y or 0.0 in y:
             raise AssertionError('`y` vector cannot contain probabilities equal to either 1 or 0')
 
-    @staticmethod
-    def _inverse_logit(p):
-        return -np.log((1/p) - 1)
-
-    @staticmethod
-    def _logit(z):
-        from scipy.special import expit
-        return expit(z)
-
     def fit(self, X, y, sample_weight=None):
+        from scipy.special import logit
         self._validate_target_variable(y)
-        super().fit(X, self._inverse_logit(y), sample_weight)
+        super().fit(X, logit(y), sample_weight)
         return self
 
     def predict_proba(self, X):
+        from scipy.special import expit
         z = super().predict(X)
-        return self._logit(z)
+        return expit(z)
 
     def predict(self, X):
         return self.predict_proba(X).round()
