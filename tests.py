@@ -15,5 +15,18 @@ def test_plr():
     print('test_plr() passed')
 
 
+def test_binary_logit():
+    # TODO 11/3/2018 check that this test runs as expected
+    from sklearn.datasets import load_breast_cancer
+    from rosey.models import BinaryLogisticRegression
+
+    x, y = load_breast_cancer(return_X_y=True)
+
+    logit = BinaryLogisticRegression()
+    logit.fit(x, y)
+    print(logit.score(x, y))
+
+
 if __name__ == '__main__':
-    test_plr()
+    # test_plr()
+    test_binary_logit()

@@ -83,6 +83,40 @@ class KerasSKWrappedBaggingClassifier(ClassifierMixin):
 
 
 # noinspection PyPep8Naming
+class BinaryLogisticRegression(BaseEstimator, RegressorMixin):
+    """
+    Binary logistic regression from statsmodel made to look like
+    """
+    def __init__(self, fit_intercept=True):
+        self.model_, self.result_ = None, None
+        self.fit_intercept = fit_intercept
+
+    def fit(self, X, y):
+        import statsmodels.api as sm
+        if self.fit_intercept:
+            X = sm.add_constant(X)
+        self.model_ = sm.Logit(y, X)
+        self.result_ = self.model_.fit()
+        return self
+
+    def predict_proba(self, X):
+        import statsmodels.api as sm
+        if self.model_ is not None:
+            raise NotFittedError('Call .fit() first')
+
+        if self.fit_intercept:
+            X = sm.add_constant(X)
+        return self.result_.predict(X)
+
+    def predict(self, X):
+        return self.predict_proba(X).round()
+
+    def score(self, X, y, **kwargs):
+        from sklearn.metrics import accuracy_score
+        return accuracy_score(y, self.predict(X))
+
+
+# noinspection PyPep8Naming
 class ProbabilityLogisticRegression(LinearRegression):
     """
     A Logistic Regression whose target variable is the prediction probability.
