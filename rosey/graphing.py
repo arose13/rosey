@@ -23,6 +23,60 @@ def plot_roc_curve(prediction_probability, true, label='', plot_curve_only=False
     return {'fpr': fpr, 'tpr': tpr, 'threshold': thres}
 
 
+def plot_biplot(pca, x_axis=0, y_axis=1, data=None, feature_names=None, c=None, show_graph=False):
+    """
+    Plots the kind of biplot R creates for PCA
+
+    :param pca: SKLearn PCA object
+    :param c: Matplotlib scatterplot c param for coloring by class
+    :param x_axis:
+    :param y_axis:
+    :param feature_names:
+    :param data: X data you want to see in the biplot
+    :param show_graph:
+    :return:
+    """
+    x_axis_upscale_coef, y_axis_upscale_coef = 1, 1
+
+    if data is not None:
+        data = pca.transform(data)
+        pc_0, pc_1 = data[:, x_axis], data[:, y_axis]
+        x_axis_upscale_coef = pc_0.max() - pc_0.min()
+        y_axis_upscale_coef = pc_1.max() - pc_1.min()
+
+        graph.scatter(pc_0, pc_1, c=c, alpha=0.66)
+
+    projected_rotation = pca.components_[[x_axis, y_axis], :]
+    projected_rotation = projected_rotation.T
+
+    for i_feature in range(projected_rotation.shape[0]):
+        graph.scatter(
+            [0, projected_rotation[i_feature, x_axis] * x_axis_upscale_coef * 1.2],
+            [0, projected_rotation[i_feature, y_axis] * y_axis_upscale_coef * 1.2],
+            alpha=0
+        )
+
+        graph.arrow(
+            0,
+            0,
+            projected_rotation[i_feature, x_axis] * x_axis_upscale_coef,
+            projected_rotation[i_feature, y_axis] * y_axis_upscale_coef,
+            alpha=0.7
+        )
+        graph.text(
+            projected_rotation[i_feature, x_axis] * 1.15 * x_axis_upscale_coef,
+            projected_rotation[i_feature, y_axis] * 1.15 * y_axis_upscale_coef,
+            f'col {i_feature}' if feature_names is None else feature_names[i_feature],
+            ha='center', va='center'
+        )
+
+    graph.xlabel(f'PC {x_axis}')
+    graph.ylabel(f'PC {y_axis}')
+
+    if show_graph:
+        graph.show()
+
+
 def plot_learning_curve(means, stds, xs=None, n=None, show_graph=False):
     """
     Plot learning curve with confidence intervals

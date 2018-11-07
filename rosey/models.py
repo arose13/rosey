@@ -82,6 +82,57 @@ class KerasSKWrappedBaggingClassifier(ClassifierMixin):
         return np.argmax(self.predict_proba(X), 1)
 
 
+class LossRegression(RegressorMixin, BaseEstimator):
+    """
+    This is a linear regression that can optimise any custom continuous loss functions directly.
+
+    J(m) = loss_function + lam * L_norm
+    """
+    from sklearn.metrics import mean_squared_error
+
+    def __init__(self, loss_function=mean_squared_error, lam=0, norm=2, fit_intercept=True):
+        self.coef_ = None
+        self.loss_ = None
+        self.objective_ = loss_function
+        self.lam = lam
+        self.norm = norm
+
+    def fit(self, X, y, sample_weight=None):
+        import numpy.linalg as la
+        import scipy.optimize as opt
+        from statsmodels.api import add_constant
+
+        X = add_constant(X)
+        self.coef_ = np.zeros(X.shape[1])
+
+        print(self.coef_)
+        def loss_function(coefs, obj_func, lam, norm):
+            y_hat = X @ coefs
+            loss = obj_func(y_true=y, y_pred=y_hat)
+            # loss += lam * la.norm(coefs, ord=norm)
+            return loss
+        self.loss_ = loss_function
+
+        result = opt.fmin(loss_function, self.coef_.copy(), (self.objective_, self.lam, self.norm))
+        print(result)
+
+        return self
+
+    def predict(self, X):
+        return None
+
+    def score(self, X, y, sample_weight=None):
+        """
+        Computes the loss for whatever function you gave it
+
+        :param X:
+        :param y:
+        :param sample_weight:
+        :return:
+        """
+        return 0
+
+
 # noinspection PyPep8Naming
 class BinaryLogisticRegression(BaseEstimator, RegressorMixin):
     """
@@ -326,3 +377,21 @@ class KerasL1OLSRegressor(KerasL1OLSBase, RegressorMixin):
             ]
         )
         return self
+
+
+if __name__ == '__main__':
+    from statsmodels.api import add_constant
+    from sklearn.datasets import load_boston
+    from sklearn.metrics import mean_squared_error, mean_squared_log_error
+    from sklearn.linear_model import LinearRegression
+
+    x, y = load_boston(return_X_y=True)
+    x = add_constant(x)
+
+    gt = LinearRegression(fit_intercept=False)
+    gt.fit(x, y)
+    print(gt.coef_)
+
+    # clr = LossRegression()
+    # clr.fit(x, y)
+
