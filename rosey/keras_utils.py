@@ -1,5 +1,7 @@
 # Check out the Loss Functions Notebook if you want to so some graphs
 import keras.backend as K
+from keras import initializers
+from keras.layers import Layer
 from keras.optimizers import Optimizer
 from keras.regularizers import Regularizer
 from .Errors import IllegalArgumentsException
@@ -168,6 +170,41 @@ def absolute_fused_lasso(alpha=2.0, l1_ratio=0.5, l1=None, abs_fuse=None):
 
     else:
         raise IllegalArgumentsException('`l1` and `fuse` must be given OR `alpha` and `l1_ratio`')
+
+
+########################################################################################################################
+# Custom Layers
+########################################################################################################################
+class RBFLayer(Layer):
+    def __init__(self, output_dim, **kwargs):
+        self.output_dim = output_dim
+        self.centers, self.betas = [None] * 2
+        super(RBFLayer, self).__init__(**kwargs)
+
+    def build(self, input_shape):
+        super(RBFLayer, self).build(input_shape)
+        self.centers = self.add_weight(
+            name='centers',
+            shape=(self.output_dim, input_shape[1]),
+            initializer=initializers.he_uniform(),
+            trainable=True
+        )
+        self.betas = self.add_weight(
+            name='betas',
+            shape=(self.output_dim,),
+            initializer=initializers.constant(1.0),
+            trainable=True
+        )
+
+    def call(self, inputs, **kwargs):
+        # RBF activation function
+        # \varphi = exp[-\beta * ||x-\mu||^2]
+        c = K.expand_dims(self.centers)
+        h = K.transpose(c - K.transpose(inputs))
+        return K.exp(-self.betas * K.sum(h ** 2, axis=1))
+
+    def compute_output_shape(self, input_shape):
+        return input_shape[0], self.output_dim
 
 
 ########################################################################################################################
