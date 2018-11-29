@@ -8,7 +8,7 @@ from keras.metrics import binary_crossentropy
 from keras.callbacks import EarlyStopping, ModelCheckpoint
 from sklearn.base import BaseEstimator, ClassifierMixin, RegressorMixin
 from sklearn.model_selection import KFold
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression, Lasso
 from sklearn.neighbors import KernelDensity
 from sklearn.utils import resample
 from sklearn.exceptions import NotFittedError
@@ -19,6 +19,23 @@ from .keras_utils import sklearn_mse, keras_r2
 def _np_dropna(a):
     """Mimics pandas dropna"""
     return a[~np.isnan(a).any(axis=1)]
+
+
+# noinspection PyPep8Naming
+class OLSL1(Lasso):
+    """
+    OLS L1 regression is the OLS regression that uses mse+l1 penalty for parameter optimisation.
+    This model will always outperform Lasso on MSE and Rsq
+    """
+    def __init__(self, *args, ols_coefs: bool=True, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.ols_coefs = ols_coefs
+
+    # noinspection PyAttributeOutsideInit
+    def fit(self, X, y, check_input=True):
+        super(OLSL1, self).fit(X, y, check_input)
+        if self.ols_coefs:
+            self.coef_ = self.coef_ + np.sign(self.coef_) * self.alpha
 
 
 # noinspection PyPep8Naming
