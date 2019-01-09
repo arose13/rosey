@@ -18,6 +18,10 @@ def coerce_string_to_float(x):
     except ValueError:
         return np.nan
 
+    
+def all_close_to(a, value=0, tol=1e-7):
+    return np.all(abs(a - value) < tol)
+
 
 def timestamp(date_only=True):
     return arrow.utcnow().format('DD-MM-YYYY' if date_only else 'DD-MM-YYYY-HHmm')
