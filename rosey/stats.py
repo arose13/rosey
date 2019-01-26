@@ -796,11 +796,11 @@ class PenalisedFDRControl:
     >>> from sklearn.datasets import load_breast_cancer, load_boston
     >>> x, y = load_boston(True)
     >>> reg_fdr = PenalisedFDRControl().fit(x, y)
-    >>> np.isclose(reg_fdr.model.score(x, y), 0.618, atol=0.01)
+    >>> np.isclose(reg_fdr.model.score(x,y,), 0.618, atol=0.01)
     True
     >>> x, y = load_breast_cancer(True)
     >>> clf_fdr = PenalisedFDRControl(is_regression=False).fit(x, y)
-    >>> np.isclose(clf_fdr.model.score(x, y), 0.984, atol=0.01)
+    >>> np.isclose(clf_fdr.model.score(x,y,), 0.984, atol=0.01)
     True
 
     """
