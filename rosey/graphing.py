@@ -219,7 +219,7 @@ def plot_confusion_probability_matrix(
         graph.show()
 
 
-def plot_barplot(d: dict, orient: str= 'h', show_graph=False):
+def plot_barplot(d: dict, orient: str = 'h', show_graph=False):
     """
     Create bar plot from a dictionary that maps a name to the size of the bar
 
@@ -234,7 +234,7 @@ def plot_barplot(d: dict, orient: str= 'h', show_graph=False):
     orient = orient.lower()
 
     if 'h' not in orient and 'v' not in orient:
-        raise ValueError('`orient` must be either `h` for horizontal and `v` for veritcal')
+        raise ValueError('`orient` must be either `h` for horizontal and `v` for vertical')
 
     bar_plot = graph.barh if 'h' in orient else graph.bar
     bar_plot(
@@ -247,7 +247,7 @@ def plot_barplot(d: dict, orient: str= 'h', show_graph=False):
         graph.show()
 
 
-def plot_2d_histogram(x, y, bins=100, transform=lambda z: z, show_graph=False):
+def plot_2d_histogram(x, y, bins=100, transform=lambda z: z, plot_kwargs: dict = None, show_graph=False):
     """
     Creates a 2D histogram AND allows you to transform the colors of the histogram with the transform function
 
@@ -256,15 +256,22 @@ def plot_2d_histogram(x, y, bins=100, transform=lambda z: z, show_graph=False):
     :param y:
     :param bins:
     :param transform: function that takes 1 argument used to transform the histogram
+    :param plot_kwargs: arguments to pass to the internal imshow()
     :param show_graph:
     :return:
     """
     import numpy as np
 
+    required_kwargs = {'aspect': 'auto'}
+    if plot_kwargs is None:
+        plot_kwargs = required_kwargs
+    else:
+        plot_kwargs.update(required_kwargs)
+
     h, *_ = np.histogram2d(x, y, bins=bins)
     h = np.rot90(h)
 
-    graph.imshow(transform(h), aspect='auto')
+    graph.imshow(transform(h), **plot_kwargs)
     if show_graph:
         graph.show()
 
