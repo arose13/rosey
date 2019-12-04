@@ -4,6 +4,21 @@ from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.exceptions import NotFittedError
 
 
+def target_statistics(x: np.ndarray, y, stat_func=np.mean):
+    """
+    Transforms a categorical X into a numerical column
+    """
+    if isinstance(x, pd.Series):
+        x = x.values
+
+    lookup = {cat: stat_func(y[x == cat]) for cat in np.unique(x)}
+    x_prime = np.zeros_like(x)
+    for cat, stat_i in lookup.items():
+        x_prime[x == cat] = stat_i
+
+    return x_prime, lookup
+
+
 # noinspection PyPep8Naming
 class GetSubsetTransform(BaseEstimator, TransformerMixin):
     """
